@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Transition</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    touch-action: pan-y; /* 允许用户滑动屏幕 */
+  }
+
+  .image-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    cursor: pointer; /* 改变鼠标样式为手型，提示用户可点击 */
+  }
+
+  .image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0; /* 初始化为透明 */
+    transition: opacity 1s ease-in-out; /* 平滑过渡效果 */
+  }
+
+  .visible {
+    opacity: 1;
+  }
+
+  .text-container {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    pointer-events: none; /* 确保点击事件可以穿透到图片容器 */
+  }
+
+  .text-container.visible {
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+
+<div class="image-container" onclick="showNextImage()">
+  <!-- 图片将通过JavaScript动态添加 -->
+</div>
+
+<div class="text-container" id="textContainer"></div>
+
+<script>
+  var images = [
+    "img/传说故事1无人物.png",
+    "img/传说故事1人物.png",
+    "img/传说故事2无人物.png",
+    "img/传说故事2人物.png",
+    "img/传说故事2弹窗.png"
+  ];
+
+  var currentIndex = 0; // 当前显示的图片索引
+
+  function showNextImage() {
+    if (currentIndex >= images.length) return; // 如果所有图片都已显示，不再执行
+
+    var imageContainer = document.querySelector('.image-container');
+    var currentImage = imageContainer.querySelector('.visible');
+    var textContainer = document.getElementById('textContainer');
+
+    // 隐藏文本
+    textContainer.classList.remove('visible');
+
+    // 如果当前有图片正在显示，隐藏它
+    if (currentImage) {
+      currentImage.classList.remove('visible');
+      currentImage.classList.add('hidden');
+    }
+
+    // 创建新的图片元素
+    var newImage = document.createElement('img');
+    newImage.src = images[currentIndex];
+    newImage.classList.add('image', 'visible');
+    newImage.alt = 'Image ' + (currentIndex + 1);
+
+    // 将新图片添加到容器中
+    imageContainer.appendChild(newImage);
+
+    // 根据图片索引显示特定文本
+    if (currentIndex === 1 || currentIndex === 3) { // 第二张和第四张图片
+      displayText(currentIndex === 1 ? '987654321' : '12345678');
+    }
+
+    // 更新当前索引
+    currentIndex++;
+  }
+
+  function displayText(message) {
+    var textContainer = document.getElementById('textContainer');
+    var characters = message.split('');
+    var index = 0;
+
+    textContainer.innerHTML = '';
+    textContainer.classList.add('visible');
+
+    function typeChar() {
+      if (index < characters.length) {
+        textContainer.innerHTML += characters[index++];
+        setTimeout(typeChar, 100); // 每个字符间隔100毫秒显示
+      }
+    }
+
+    typeChar();
+  }
+
+  // 初始化显示第一张图片
+  showNextImage();
+</script>
+
+</body>
+</html>
